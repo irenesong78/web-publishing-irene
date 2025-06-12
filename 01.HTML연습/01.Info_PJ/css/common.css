@@ -82,7 +82,7 @@
   /* 글자크기 */
   font-size: 25px;
   /* 패딩: 위아래0 양쪽17px */
-  padding: 0 17px;
+  /* padding: 0 17px; */
 }
 /* 메뉴링크 */
 .header ul li a {
@@ -100,7 +100,32 @@
   color: darkgreen;
   /* 글자윗줄 */
   text-decoration: overline;
+  /*인라인요소간 진행방향 세로정렬 : vertical-align*/
+  vertical-align: 0px;
   /* 라인삭제는 ctrl+shift k */
+}
+
+/* 메뉴 사이에 구분자 넣기 
+가상요소 사용!
+1. ::before 요소의 컨텐츠 앞에 추가됨
+2. ::after 요소의 컨텐츠 뒤에 추가됨
+콜론을 가상요소는 두개 사용함(::)
+참고) 가상클래스는 콜론을 사나씀(:) 예) a:hover
+중요) 필수속성인 content를 반드시 써야함!
+-> content값으로 문자내용 또는 이미지를 넣을 수 있다!
+*/
+/* .header ul li::after{
+content: url(../images/naver_logo.png);
+} */
+
+/* 첫번째 li를 제외하고 선택하기
+-> 형제선택자 +
+앞에 어떤 요소가 있는 것만 선택가능
+li+li : 앞에 li가 있는 li만 선택함! */
+.header ul li+li::before{
+  content: ' | ';
+  margin: 0 15px;
+/* content: url(../images/naver_logo.png); */
 }
 
 /*  2. 메인영역 */

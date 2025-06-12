@@ -103,6 +103,8 @@
   text-decoration: none;
   /* 글자두껩게 */
   font-weight: bold;
+  /*인라인요소간 진행방향 세로정렬 : vertical-align*/
+  vertical-align: 4px;
 }
 /* 링크 마우스 오버시 
   가상클래스 선택자:hover 사용함! */
@@ -111,8 +113,7 @@
   color: hotpink;
   /* 글자윗줄 */
   text-decoration: underline;
-  /*인라인요소간 진행방향 세로정렬 : vertical-align*/
-  vertical-align: 0px;
+  
   /* 라인삭제는 ctrl+shift k */
 }
 

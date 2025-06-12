@@ -55,6 +55,8 @@
 
 /* 타이틀 */
 #main-title {
+  /* 글자체 */
+  font-family: "Jua", sans-serif;
   font-size: 50px;
   color: #4b61ec;
   margin: 0;
@@ -62,6 +64,8 @@
 
 /* 메뉴박스 */
 .header ul {
+  /* 웹폰트 글자체 */
+  font-family: "Nanum Pen Script", cursive;
   /* 블릿없앰 lin */
   list-style: none;
   /* float:left를 사용했으므로
@@ -104,9 +108,9 @@
   가상클래스 선택자:hover 사용함! */
 .header ul li a {
   /* 글자색 */
-  color: darkgreen;
+  color: hotpink;
   /* 글자윗줄 */
-  text-decoration: overline;
+  text-decoration: underline;
   /*인라인요소간 진행방향 세로정렬 : vertical-align*/
   vertical-align: 0px;
   /* 라인삭제는 ctrl+shift k */

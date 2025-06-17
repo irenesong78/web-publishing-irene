@@ -88,22 +88,20 @@ test-shadow: x축 y축 blur 색
   line-height: 1.7;
 }
 /* mark태그 디자인 변경 */
-.article-content mark{
-    /* 블록으로 변경 */
-    display: inline-block;
-    /* 박스설정 */
-    padding: 10px 50px;
-    background-color: #dddddd;
-    margin: 17px 30px;
-    border-top: 2px solid gray;
-    border-bottom: 2px solid gray
-    /* 글자설정 */
-    font-family: "Nanum Pen Script", cursive;
-    
-
-
-
-
+.article-content mark {
+  /* 블록으로 변경 */
+  display: inline-block;
+  /* 박스설정 */
+  padding: 10px 50px;
+  background-color: #dddddd;
+  margin: 17px 30px;
+  border-top: 2px solid gray;
+  border-bottom: 2px solid gray;
+  /* 글자설정 */
+  font-family: "Nanum Pen Script", cursive;
+  font-size: 30px;
+  color: darkorange;
+  text-shadow: 2px 2px 1px #00000088;
 }
 
 /* 2-6. 기자정보 */

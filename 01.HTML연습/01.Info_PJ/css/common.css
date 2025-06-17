@@ -6,7 +6,7 @@
 
 /* 웹폰트 불러오기 */
 @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Pen+Script&display=swap');
-/* 웹폰트체 셋팅법
+/* 웹폰트체 셋팅법 우선순위 순
  font-family: "Nanum Pen Script", cursive;
  font-family: "Jua", sans-serif;
 */

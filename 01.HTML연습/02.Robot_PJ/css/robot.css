@@ -119,6 +119,16 @@ body {
   width: 50px;
   height: 180px;
 }
+/* 목 */
+.neck {
+  position: absolute;
+  /* 부모는? .body */
+  top: -50px;
+  left: 65px;
+
+  width: 50px;
+  height: 50px;
+}
 
 /* 왼팔 */
 .arm1 {
@@ -148,48 +158,46 @@ body {
 
   width: 70px;
   height: 260px;
-  
 }
 /* 오른다리 */
-.leg2{
-    right: 0;
+.leg2 {
+  right: 0;
 }
 
 /* 다리하단 공통 */
-.leg span{
-    position: absolute;
-    /* 부모는? .leg */
-    top: 100%;
-    left: 10%;
+.leg span {
+  position: absolute;
+  /* 부모는? .leg */
+  top: 100%;
+  left: 10%;
 
-    width: 80%;
-    height: 100%;
+  width: 80%;
+  height: 100%;
 }
 
 /* 로봇 TV */
-.tv{
-position: absolute;
-/* 부모는? .body */
-top: 45px;
-left: 20px;
+.tv {
+  position: absolute;
+  /* 부모는? .body */
+  top: 45px;
+  left: 20px;
 
-width: 140px;
-height: 100px;
+  width: 140px;
+  height: 100px;
 
-/* 배경 */
-background: url(../images/tv.jpg) no-repeat 0/100% 100% ;
+  /* 배경 */
+  background: url(../images/tv.jpg) no-repeat 0/100% 100%;
 }
 
 /* 스크린 */
-.screen{
-position: absolute;
-/* 부모는? .tv */
-top: 56px;
-left: 28px;
+.screen {
+  position: absolute;
+  /* 부모는? .tv */
+  top: 56px;
+  left: 28px;
 
-width: 99px;
-height:71px;
-background-color: red;
-border-radius: 10px;
+  width: 99px;
+  height: 71px;
+  background-color: red;
+  border-radius: 10px;
 }
-

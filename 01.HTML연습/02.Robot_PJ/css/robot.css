@@ -66,14 +66,21 @@ body {
 }
 
 /* 입 */
-.mouth{
-    position: absolute;
-    bottom: 25px;
-    left: 80px;
-         
-    width: 90px;
-    height: 40px;
-    background: url(../images/mouth.png) no-repeat 0/110% 100%;
+.mouth {
+  position: absolute;
+  bottom: 25px;
+  left: 80px;
 
+  width: 90px;
+  height: 40px;
+  background: url(../images/mouth.png) no-repeat 0/110% 100%;
+}
+/* 왼귀 */
+.ear1 {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 
+  width: 50px;
+  height: 80px;
 }

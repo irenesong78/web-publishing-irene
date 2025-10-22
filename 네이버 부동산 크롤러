@@ -1,0 +1,152 @@
+# -*- coding: utf-8 -*-
+import requests
+import pandas as pd
+from datetime import datetime
+import time
+import json
+
+# --- 설정 부분 ---
+# 서울 지역 코드
+SEOUL_REGION_CODE = "1100000000"
+# 수집하려는 매물 유형 (상가, 사무실, 공장/창고, 지식산업센터, 건물, 토지)
+# 네이버 부동산에서 사용하는 코드에 맞춰 설정했습니다.
+PROPERTY_TYPES = {
+    "상가": "SG",
+    "사무실": "OF",
+    "공장창고": "GJCG",
+    "지식산업센터": "APTHOF",
+    "건물": "BL",
+    "토지": "TJ"
+}
+# 거래 방식 (매매)
+TRADE_TYPE = "A1"
+
+# --- 내부 설정 (수정 불필요) ---
+# 요청 헤더: 브라우저처럼 보이게 하기 위한 설정
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+    "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Referer": "https://new.land.naver.com/",
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzI0OTYyMjIsImV4cCI6MTY3MjUwNzAyMiwic3ViIjoiTkFWRVJfUkVBTF9FU1RBVEVfQVBQIn0.Yeo24NBOv3Uo9o_m0y-cmYJd_2HE9y7gs2e0BcaAnVE"
+}
+
+def get_article_list(region_code, property_type, trade_type):
+    """지정된 지역과 매물 유형의 매물 목록 ID를 가져오는 함수"""
+    article_list = []
+    page = 1
+    while True:
+        # 네이버 부동산 API 엔드포인트
+        list_url = f"https://new.land.naver.com/api/articles/list?region={region_code}&rletType={property_type}&tradeType={trade_type}&page={page}"
+        
+        try:
+            res = requests.get(list_url, headers=HEADERS, timeout=10)
+            res.raise_for_status() # 오류 발생 시 예외 처리
+            
+            data = res.json()
+            
+            if "articleList" in data and data["articleList"]:
+                for article in data["articleList"]:
+                    article_list.append(article["articleNo"])
+                print(f"페이지 {page}에서 {len(data['articleList'])}개의 매물 ID를 찾았습니다.")
+                page += 1
+                time.sleep(1) # 서버 부하를 줄이기 위해 잠시 대기
+            else:
+                # 더 이상 매물이 없으면 반복 종료
+                print("더 이상 매물이 없어 목록 수집을 종료합니다.")
+                break
+        except requests.exceptions.RequestException as e:
+            print(f"매물 목록을 가져오는 중 오류 발생: {e}")
+            break
+        except json.JSONDecodeError:
+            print(f"JSON 파싱 오류 발생. 응답 내용: {res.text}")
+            break
+            
+    return article_list
+
+def get_article_detail(article_no):
+    """매물 ID를 사용하여 상세 정보를 가져오는 함수"""
+    detail_url = f"https://new.land.naver.com/api/articles/{article_no}/detail"
+    
+    try:
+        res = requests.get(detail_url, headers=HEADERS, timeout=10)
+        res.raise_for_status()
+        
+        data = res.json()
+        
+        # 필요한 정보 추출
+        detail = data.get("articleDetail", {})
+        addition = data.get("articleAddition", {})
+        space = data.get("articleSpace", {})
+        price = data.get("articlePrice", {})
+        facility = data.get("articleFacility", {})
+        
+        # 사진 정보 추출
+        photos = [photo['imageUrl'] for photo in data.get("articlePhotos", []) if 'imageUrl' in photo]
+
+        return {
+            "소재지(지번주소)": addition.get("address", ""),
+            "대지면적(㎡)": space.get("totalArea", 0),
+            "연면적(㎡)": space.get("groundArea", 0),
+            "건축면적(㎡)": space.get("buildingArea", 0),
+            "전용면적(㎡)": space.get("exclusiveArea", 0),
+            "지상층": detail.get("floorInfo", "0/0").split('/')[0],
+            "지하층": detail.get("floorInfo", "0/0").split('/')[1] if '/' in detail.get("floorInfo", "0/0") else '0',
+            "용적률(%)": addition.get("floorAreaRatio", 0),
+            "건폐율(%)": addition.get("buildingCoverageRatio", 0),
+            "총주차대수": facility.get("parkingCount", 0),
+            "용도지역": addition.get("usageArea", ""),
+            "건축물 용도": detail.get("buildingUse", ""),
+            "사용승인일": addition.get("useApproveDate", ""),
+            "확인매물 일자": detail.get("confirmDate", ""),
+            "매물사진": ", ".join(photos) # 사진 URL들을 텍스트로 합침
+        }
+
+    except requests.exceptions.RequestException as e:
+        print(f"매물 {article_no} 상세 정보를 가져오는 중 오류 발생: {e}")
+        return None
+    except json.JSONDecodeError:
+            print(f"JSON 파싱 오류 발생 (상세 정보). 응답 내용: {res.text}")
+            return None
+
+
+def main():
+    """메인 실행 함수"""
+    print("네이버 부동산 데이터 수집을 시작합니다.")
+    
+    all_results = []
+    
+    for prop_name, prop_code in PROPERTY_TYPES.items():
+        print(f"\n--- {prop_name} ({prop_code}) 매물 수집 시작 ---")
+        
+        # 1. 매물 목록 ID 가져오기
+        article_ids = get_article_list(SEOUL_REGION_CODE, prop_code, TRADE_TYPE)
+        print(f"총 {len(article_ids)}개의 {prop_name} 매물 ID를 수집했습니다.")
+        
+        # 2. 각 매물 상세 정보 가져오기
+        for article_id in article_ids:
+            print(f"매물 ID: {article_id} 상세 정보 수집 중...")
+            detail_info = get_article_detail(article_id)
+            if detail_info:
+                detail_info["매물유형"] = prop_name # 어떤 유형의 매물인지 추가
+                all_results.append(detail_info)
+            time.sleep(1) # 서버 부하를 줄이기 위해 1초 대기
+            
+    if not all_results:
+        print("\n수집된 데이터가 없습니다. 프로그램을 종료합니다.")
+        return
+
+    # 3. 수집된 데이터를 엑셀 파일로 저장
+    df = pd.DataFrame(all_results)
+    
+    # 파일 이름에 오늘 날짜 추가
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    filename = f"네이버부동산_서울_매매_{today_str}.xlsx"
+    
+    df.to_excel(filename, index=False, engine='openpyxl')
+    
+    print(f"\n총 {len(all_results)}개의 매물 정보를 성공적으로 수집하여 '{filename}' 파일로 저장했습니다.")
+
+
+if __name__ == "__main__":
+    main()
